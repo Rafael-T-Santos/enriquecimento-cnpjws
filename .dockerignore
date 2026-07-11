@@ -1,0 +1,10 @@
+# NÃO copiar o .env para dentro da imagem (a senha só entra via env_file em runtime).
+.env
+# Lixo que não precisa ir para o build context.
+.git
+.venv/
+__pycache__/
+*.pyc
+*.db
+*.db-journal
+exports/

@@ -1,0 +1,12 @@
+services:
+  enriquecimento:
+    build: .
+    container_name: enriquecimento_cnpjws
+    # Reaproveita as mesmas credenciais do Oracle (DB_USER/DB_PASS/DB_DSN) e o
+    # token do cnpj.ws a partir do .env desta pasta (que fica no .gitignore).
+    env_file:
+      - .env
+    # Monta a pasta do projeto no container, para que o banco SQLite gerado
+    # (enriquecimento.db) e os CSVs em exports/ fiquem salvos aqui no host.
+    volumes:
+      - .:/app
