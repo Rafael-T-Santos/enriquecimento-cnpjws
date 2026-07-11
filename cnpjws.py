@@ -7,13 +7,35 @@ BASE_URL = "https://comercial.cnpj.ws/cnpj/"
 
 
 def limpar_cnpj(valor):
-    """Deixa só os dígitos. Retorna None se não for um CNPJ válido (14 dígitos)."""
+    """Deixa só os dígitos. Retorna None se não for um CNPJ válido.
+
+    Valida os dígitos verificadores, então CNPJs estruturalmente inválidos
+    (00000000000000, dígitos repetidos, erros de digitação) são rejeitados aqui
+    e nem chegam a gastar uma consulta na API.
+    """
     if not valor:
         return None
     digitos = re.sub(r"\D", "", str(valor))
-    if len(digitos) != 14:
+    if len(digitos) != 14 or not _cnpj_dv_valido(digitos):
         return None
     return digitos
+
+
+def _cnpj_dv_valido(cnpj):
+    """Confere os dois dígitos verificadores de um CNPJ de 14 dígitos."""
+    if cnpj == cnpj[0] * 14:  # todos os dígitos iguais (00000..., 11111...)
+        return False
+
+    def dv(base, pesos):
+        soma = sum(int(d) * p for d, p in zip(base, pesos))
+        resto = soma % 11
+        return "0" if resto < 2 else str(11 - resto)
+
+    pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    pesos2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    d1 = dv(cnpj[:12], pesos1)
+    d2 = dv(cnpj[:12] + d1, pesos2)
+    return cnpj[12:] == d1 + d2
 
 
 class CnpjWsClient:

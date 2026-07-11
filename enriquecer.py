@@ -61,7 +61,7 @@ def cmd_rodar(args):
 
             if not cnpj:
                 store.salvar_consulta(execucao_id, parc, None, "CNPJ_INVALIDO",
-                                      erro="Documento não é um CNPJ de 14 dígitos")
+                                      erro="Documento não é um CNPJ válido (14 dígitos + DV)")
                 print(f"{prefixo}: CNPJ inválido ({parc.get('cgc_cpf')})")
                 continue
 
